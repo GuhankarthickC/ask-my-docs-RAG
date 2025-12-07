@@ -1,0 +1,6 @@
+@AskMyDocs_HostAddress = http://localhost:5089
+
+GET {{AskMyDocs_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,85 @@
+<section class="upload-panel card">
+  <header>
+    <div>
+      <p class="eyebrow">Upload documents</p>
+      <h2>Add new files to this workspace.</h2>
+      <p class="lede">Upload playbooks, policies, or spreadsheets and they will be available beside chat within moments.</p>
+    </div>
+  </header>
+
+  <div class="dropzone" [class.drag-over]="isDragOver" (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+    <div class="dropzone-inner">
+      <p>Drag files into this panel</p>
+      <small>or</small>
+      <button type="button" class="btn primary" (click)="fileInput.click()">Choose from device</button>
+      <p class="formats">Supports PDF, Office documents, text, and image files.</p>
+    </div>
+    <input #fileInput type="file" multiple (change)="onFileBrowse($event)" />
+  </div>
+
+  <div class="activity-bar">
+    <p>Review recent uploads without leaving this page.</p>
+    <button type="button" class="btn ghost activity-trigger" (click)="toggleActivityOverlay()"
+      [attr.aria-pressed]="showActivityOverlay">
+      Upload activity
+      <span class="activity-dot" *ngIf="hasActivityAlert" aria-label="New upload activity"></span>
+    </button>
+  </div>
+
+</section>
+
+<div class="activity-overlay" *ngIf="showActivityOverlay" aria-live="polite">
+  <article class="activity-card card">
+    <header>
+      <div class="header-meta">
+        <p class="eyebrow">Live status</p>
+        <p class="overlay-subhead">Progress updates appear in real time.</p>
+      </div>
+      <button type="button" class="btn icon" (click)="closeActivityOverlay()" aria-label="Close activity panel">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </header>
+
+    <p class="empty" *ngIf="queue.length === 0">Nothing is uploading right now.</p>
+
+    <ul class="overlay-list" *ngIf="queue.length > 0">
+      <li *ngFor="let item of queue" [ngClass]="item.status">
+        <div class="overlay-chip" aria-hidden="true">
+          <span>{{ getExtension(item.fileName) }}</span>
+        </div>
+        <div class="overlay-info">
+          <div class="overlay-header">
+            <p class="file-name">{{ item.fileName }}</p>
+            <small>{{ formatSize(item.size) }}</small>
+          </div>
+          <p class="file-message" *ngIf="item.message">{{ item.message }}</p>
+          <div class="overlay-meta">
+            <span class="status-pill" [ngClass]="item.status">{{ getStatusLabel(item.status) }}</span>
+            <span class="status-note">{{ getStatusNote(item.status) }}</span>
+          </div>
+          <div class="overlay-progress">
+            <span [style.width.%]="getProgress(item.status)"></span>
+          </div>
+        </div>
+        <div class="overlay-actions">
+          <button type="button" class="btn text" (click)="retryUpload(item.id)" *ngIf="item.status === 'error'">
+            Retry
+          </button>
+        </div>
+      </li>
+    </ul>
+  </article>
+</div>
+
+<div class="toast-stack" *ngIf="toasts.length > 0" aria-live="polite" aria-atomic="true">
+  <article class="toast" *ngFor="let toast of toasts" [ngClass]="toast.type">
+    <div>
+      <p class="toast-title">{{ toast.title }}</p>
+      <small *ngIf="toast.message">{{ toast.message }}</small>
+    </div>
+    <button type="button" class="toast-close" (click)="dismissToast(toast.id)" aria-label="Dismiss notification">
+      &times;
+    </button>
+  </article>
+</div>

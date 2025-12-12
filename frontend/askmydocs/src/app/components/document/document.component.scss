@@ -1,0 +1,46 @@
+:host {
+  display: block;
+  background: radial-gradient(circle at top, rgba(13, 110, 253, 0.08), transparent 55%) fixed;
+}
+
+.documents-hero {
+  padding: 4rem 0 2rem;
+}
+
+.documents-hero .container {
+  max-width: 960px;
+}
+
+.documents-hero h1 {
+  margin: 0.5rem 0 1rem;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+}
+
+.documents-hero .lede {
+  max-width: 720px;
+}
+
+.hero-actions {
+  margin-top: 1rem;
+}
+
+.documents-grid {
+  padding-bottom: 4rem;
+}
+
+.documents-grid .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+@media (max-width: 768px) {
+  .documents-hero {
+    padding-top: 2.5rem;
+  }
+
+  .documents-grid .grid {
+    grid-template-columns: 1fr;
+  }
+}

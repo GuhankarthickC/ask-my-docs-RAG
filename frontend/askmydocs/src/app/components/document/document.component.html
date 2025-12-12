@@ -1,0 +1,19 @@
+<section class="documents-hero">
+	<div class="container">
+		<p class="eyebrow">Document workspace</p>
+		<h1>Upload, review, and keep the chat index in sync.</h1>
+		<p class="lede">
+			Upload files, monitor their processing status, and promote them when they are ready to power downstream chat questions.
+		</p>
+		<div class="hero-actions">
+			<a routerLink="/chat" class="btn ghost">Go to chat</a>
+		</div>
+	</div>
+</section>
+
+<section class="documents-grid">
+	<div class="container grid">
+		<app-upload-panel (filesUploaded)="handleFilesUploaded()"></app-upload-panel>
+		<app-uploaded-documents></app-uploaded-documents>
+	</div>
+</section>

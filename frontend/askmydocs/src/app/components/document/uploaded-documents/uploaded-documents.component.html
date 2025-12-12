@@ -1,0 +1,64 @@
+<section class="uploaded-documents card">
+  <header>
+    <div>
+      <p class="eyebrow">Uploaded documents</p>
+      <h2>Ready for questions.</h2>
+      <p class="lede">Everything listed here is already indexed for chat. Use refresh if a teammate just added more.</p>
+    </div>
+    <button
+      type="button"
+      class="refresh-btn"
+      aria-label="Refresh uploaded documents"
+      (click)="refresh()"
+    >
+      <span class="refresh-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+          <path
+            d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 6.32 12.9 1 1 0 0 0-1.54-1.26A6 6 0 1 1 12 6a5.94 5.94 0 0 1 4.24 1.76l-2.53 2.53H20V4l-2.35 2.35Z"
+          ></path>
+        </svg>
+      </span>
+    </button>
+  </header>
+
+  <div class="state" *ngIf="loading">
+    <p>Loading documents...</p>
+  </div>
+  <div class="state error" *ngIf="!loading && errorMessage">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <div class="empty" *ngIf="!loading && !errorMessage && documents.length === 0">
+    <p>No documents yet.</p>
+    <small>Uploads will appear here as soon as they finish processing.</small>
+  </div>
+
+  <div class="documents-grid" *ngIf="!loading && !errorMessage && documents.length > 0">
+    <article class="document-card" *ngFor="let document of documents; trackBy: trackByDocId">
+      <div class="card-header">
+        <div class="file-icon" aria-hidden="true">
+          <span>{{ getExtension(document.fileName) }}</span>
+        </div>
+        <div class="file-meta">
+          <p class="file-name">{{ document.fileName || 'Untitled document' }}</p>
+          <small class="file-byline">{{ formatSize(document.size) }} · {{ document.contentType || 'Unknown type' }}</small>
+          <small class="file-byline">Uploaded {{ document.uploadedOn ? (document.uploadedOn | date: 'MMM d, y · h:mm a') : 'just now' }}</small>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <p class="file-description">
+          {{ getDescription(document.contentType) }}
+        </p>
+      </div>
+
+      <div class="card-footer">
+        <div class="status-pill success">Indexed</div>
+        <div class="actions">
+          <button type="button" class="btn primary" (click)="goToChat(document)">Chat</button>
+          <button type="button" class="btn ghost" (click)="deleteDocument(document)">Delete</button>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>

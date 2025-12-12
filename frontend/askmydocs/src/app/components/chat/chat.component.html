@@ -1,0 +1,135 @@
+<section class="chat-shell">
+	<aside class="context-panel card">
+		<header>
+			<div>
+				<h2>Select files to ground answers.</h2>
+				<p class="panel-note">Refresh after uploading new content so it becomes available here.</p>
+			</div>
+			<div class="header-actions">
+				<button
+					type="button"
+					class="btn ghost accent icon"
+					(click)="refreshDocuments()"
+					[disabled]="documentsLoading"
+					[attr.aria-label]="documentsLoading ? 'Refreshing documents' : 'Refresh document list'"
+				>
+					<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+						<path
+							fill="currentColor"
+							d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 6.32 12.9 1 1 0 0 0-1.54-1.26A6 6 0 1 1 12 6a5.94 5.94 0 0 1 4.24 1.76l-2.53 2.53H20V4l-2.35 2.35Z"
+						/>
+					</svg>
+				</button>
+			</div>
+		</header>
+
+		<div class="context-body">
+			<label class="select-all" *ngIf="documents.length > 0">
+				<input
+					#selectAllBox
+					type="checkbox"
+					[checked]="allSelected"
+					[indeterminate]="partiallySelected"
+					(change)="toggleSelectAll(selectAllBox.checked)"
+					aria-label="Select all documents"
+				/>
+				<span>Select all documents</span>
+			</label>
+
+			<div class="context-state" *ngIf="documentsLoading">
+				<p>Loading documents...</p>
+			</div>
+			<div class="context-state error" *ngIf="!documentsLoading && documentError">
+				<p>{{ documentError }}</p>
+			</div>
+
+			<div class="document-list" *ngIf="!documentsLoading && !documentError">
+				<p class="empty" *ngIf="documents.length === 0">No documents available yet. Upload a file to start chatting.</p>
+				<label class="document-row" *ngFor="let doc of documents">
+					<input
+						#docCheckbox
+						type="checkbox"
+						[checked]="isSelected(doc.id)"
+						(change)="toggleDocument(doc.id, docCheckbox.checked)"
+						[attr.aria-label]="'Select ' + (doc.fileName || 'document')"
+					/>
+					<div class="document-copy">
+						<p class="document-title">{{ doc.fileName || 'Untitled document' }}</p>
+						<small>{{ formatDocumentMeta(doc) }}</small>
+					</div>
+					<span class="document-extension">{{ getExtension(doc.fileName) }}</span>
+				</label>
+			</div>
+		</div>
+
+		<div class="panel-footnote">
+			<p class="utility-hint">Clears the current transcript while preserving your selected files.</p>
+			<button type="button" class="btn ghost warning" (click)="clearChat()">Clear chat</button>
+		</div>
+	</aside>
+
+	<section class="chat-panel card">
+		<header>
+			<div>
+				<h2>Ask questions about uploaded files.</h2>
+				<p class="panel-note">Change the selected files at any time; every switch is logged in the feed.</p>
+			</div>
+			<span class="context-pill" [class.active]="hasSelection">{{ contextStatus }}</span>
+		</header>
+
+		<div class="chat-body">
+			<div class="message-feed" #messageFeed>
+			<div class="context-hint" *ngIf="!hasSelection">
+				<p>Select at least one document from the left panel to ground this conversation.</p>
+			</div>
+
+			<article
+				#messageItem
+				class="message"
+				*ngFor="let message of messages; trackBy: trackByMessageId"
+				[ngClass]="message.role"
+			>
+				<div class="bubble">
+					<div class="message-content" [innerHTML]="message.html || message.text"></div>
+					<div class="message-meta">
+						<small>{{ message.timestamp | date: 'h:mm a' }}</small>
+						<span class="message-context" *ngIf="messageContextLabel(message) as label">
+							Using {{ label }}
+						</span>
+					</div>
+				</div>
+			</article>
+			<div class="message loading" *ngIf="sendingMessage" aria-live="polite" role="status">
+				<div class="bubble">
+					<span class="loading-dots" aria-hidden="true">
+						<span></span>
+						<span></span>
+						<span></span>
+					</span>
+					<small class="loading-label">Waiting for response...</small>
+				</div>
+			</div>
+			</div>
+
+			<form class="composer" (ngSubmit)="sendMessage()">
+			<div class="composer-context" *ngIf="hasSelection">
+				<span class="doc-chip" *ngFor="let selected of selectedDocuments | slice:0:3">{{ selected.fileName }}</span>
+				<span class="doc-chip more" *ngIf="selectedCount > 3">+{{ selectedCount - 3 }} more</span>
+			</div>
+			<div class="composer-fields">
+				<textarea
+					name="message"
+					[(ngModel)]="draftMessage"
+					  placeholder="Ask a question about your documents..."
+					rows="2"
+					[disabled]="!hasSelection"
+				></textarea>
+				<button type="submit" class="btn primary" [disabled]="!canSend">
+					{{ sendingMessage ? 'Sending...' : 'Send' }}
+				</button>
+			</div>
+			<small class="composer-hint">Only selected documents are used to generate responses.</small>
+			</form>
+		</div>
+	</section>
+</section>

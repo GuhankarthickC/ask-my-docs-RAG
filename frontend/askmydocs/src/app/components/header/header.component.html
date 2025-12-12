@@ -1,0 +1,21 @@
+<header class="header">
+  <div class="container header-shell">
+    <div class="brand">
+      <p class="brand-name">Ask<span>MyDocs</span></p>
+      <p class="brand-tagline">Document uploads and grounded chat</p>
+    </div>
+    <nav class="nav" aria-label="Primary">
+      <a
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Home</a
+      >
+      <a routerLink="/documents" routerLinkActive="active">Documents</a>
+      <a routerLink="/chat" routerLinkActive="active">Chat</a>
+    </nav>
+    <div class="header-actions">
+      <span class="status-pill">Pilot mode</span>
+    </div>
+  </div>
+</header>

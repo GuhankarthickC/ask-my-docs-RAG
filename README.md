@@ -7,23 +7,21 @@ Ask My Docs is a two-surface RAG-style workspace that lets teams upload governed
 ```
 ask-my-docs-RAG/
 ├─ backend/                  # ASP.NET Core service that exposes FileUpload + Chat APIs (dotnet 8)
-│  ├─ src/
-│  ├─ AskMyDocs.Api.csproj
-│  └─ ...
-└─ frontend/
-	└─ askmydocs/             # Angular 18 single-page application (this folder)
-		├─ src/app/
-		│  ├─ components/
-		│  │  ├─ document/     # Upload panel + indexed document grid
-		│  │  ├─ chat/         # Grounded chat experience
-		│  │  ├─ home/         # Landing page with live embeddings of both surfaces
-		│  │  └─ layout/       # Header, footer, shared styles
-		│  └─ services/
-		│     ├─ document.service.ts  # Talks to /api/FileUpload
-		│     └─ chat.service.ts      # Talks to /api/Chat
-		├─ angular.json
-		├─ package.json
-		└─ README.md (this file)
+├─ frontend/
+│  └─ askmydocs/             # Angular 18 single-page application
+│     ├─ src/app/
+│     │  ├─ components/
+│     │  │  ├─ document/     # Upload panel + indexed document grid
+│     │  │  ├─ chat/         # Grounded chat experience
+│     │  │  ├─ home/         # Landing page with live embeddings of both surfaces
+│     │  │  └─ layout/       # Header, footer, shared styles
+│     │  └─ services/
+│     │     ├─ document.service.ts  # Talks to /api/FileUpload
+│     │     └─ chat.service.ts      # Talks to /api/Chat
+│     ├─ angular.json
+│     └─ package.json
+├─ docs/                     # Diagrams, screenshots, and notes
+└─ README.md
 ```
 
 > The backend and frontend communicate over HTTP. By default the Angular app targets `http://localhost:5089` for both the FileUpload and Chat controllers, matching the local dotnet development port.

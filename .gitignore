@@ -1,0 +1,4 @@
+# Backend build artifacts
+backend/AskMyDocs/bin/
+backend/AskMyDocs/obj/
+backend/AskMyDocs/.vs/

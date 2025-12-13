@@ -7,6 +7,12 @@ Ask My Docs is a two-surface RAG-style workspace that lets teams upload governed
 ```
 ask-my-docs-RAG/
 ├─ backend/                  # ASP.NET Core service that exposes FileUpload + Chat APIs (dotnet 8)
+│  └─ AskMyDocs/
+│     ├─ Controllers/        # `ChatController`, `FileUploadController`
+│     ├─ Services/           # Blob ingestion + chat orchestration helpers
+│     ├─ Models/             # DTOs shared between controllers and services
+│     ├─ appsettings.json    # Azure connection + API key placeholders
+│     └─ Program.cs          # Middleware, DI, CORS, and endpoint wiring
 ├─ frontend/
 │  └─ askmydocs/             # Angular 18 single-page application
 │     ├─ src/app/
@@ -33,7 +39,21 @@ ask-my-docs-RAG/
 - **Grounded chat** – users pick the documents that will serve as context, send natural language prompts, and receive markdown-formatted answers with provenance metadata.
 - **Live home workspace** – the landing page embeds the actual upload and chat components so demos or QA can happen from a single route.
 
-## Backend service (backend/)
+## Demo & visuals
+
+- **Video walkthrough** – [Watch the end-to-end flow on YouTube](https://youtu.be/mVxnBx-GVSI) to see uploads, indexing, and RAG chat in action.
+- **Screenshots** – key surfaces captured from the latest build:
+
+	![Landing page hero](docs/images/LandingPage.png)
+	![Home hero alt state](docs/images/LandingPage_1.png)
+	![Home metrics emphasis](docs/images/LandingPage_2.png)
+	![Home responsive view](docs/images/LandingPage_3.png)
+	![Document intake center](docs/images/DocumentUpload_Centre.png)
+	![Grounded chat window](docs/images/ChatWindow.png)
+	![Citation annotations](docs/images/ChatWindow_1.png)
+	![Backend swagger surface](docs/images/Swagger.png)
+
+## Backend service
 
 The backend is an ASP.NET Core web API that exposes two logical areas:
 
@@ -46,7 +66,24 @@ The backend is an ASP.NET Core web API that exposes two logical areas:
 
 > Run the backend with `dotnet build` + `dotnet run` (or from Visual Studio). It must listen on `http://localhost:5089` unless you update the frontend service URLs.
 
-## Frontend application (frontend/askmydocs)
+### Azure resources leveraged
+
+- **Azure Blob Storage** – durable storage for uploaded documents; FileUploadController streams files into the configured container and returns blob metadata.
+- **Azure AI Search** (Cognitive Search) – indexes blob content plus metadata so the chat surface can request grounded passages by document identifier.
+- **Azure OpenAI** – turns the user prompt + retrieved passages into grounded answers; keys live in `appsettings.json` placeholders and route through `ChatService`.
+- **Azure App Service / Azure Container Apps** (recommended) – typical hosting target for the ASP.NET Core API to keep it close to the storage and search accounts.
+
+> If you run locally, the backend can still talk to cloud resources so long as the connection strings and API keys are present; for fully local development you can swap in Azurite (blob emulator) and a mock search layer.
+
+### Retrieval-Augmented Generation (RAG) flow
+
+1. **Ingestion** – uploads land in Azure Blob Storage; a background indexer or Azure Function enriches documents (chunking, metadata tagging) before pushing them into Azure AI Search.
+2. **Retrieval** – when a chat prompt arrives, `ChatService` calls Azure AI Search using the selected document IDs to fetch top-k passages.
+3. **Augmented prompt** – the backend combines the user prompt, document snippets, and provenance metadata into a single prompt template for Azure OpenAI.
+4. **Response shaping** – Azure OpenAI returns an answer plus optional citations; the API normalizes this into the `ChatResponse` DTO consumed by the Angular client.
+5. **Feedback loop** – the UI displays citation pills so users can re-open the source document, keeping the answer grounded.
+
+## Frontend application 
 
 - **Tech stack**: Angular 18 standalone components, RxJS, SCSS modules, Angular Router.
 - **State flow**:
@@ -127,7 +164,7 @@ This codebase is provided for internal pilots and education.
 
 ## Author
 
-**Guhan Karthick C**
+**Guhan Karthick**
 
 ## Built With
 

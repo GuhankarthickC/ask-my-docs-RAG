@@ -41,10 +41,7 @@ ask-my-docs-RAG/
 
 ## Demo & visuals
 
-Watch the end-to-end flow on YouTube:
-
-https://youtu.be/mVxnBx-GVSI
-
+- **Video walkthrough** – [Watch the end-to-end flow on YouTube](https://youtu.be/mVxnBx-GVSI) to see uploads, indexing, and RAG chat in action.
 - **Screenshots** – key surfaces captured from the latest build:
 
 	![Landing page hero](docs/images/LandingPage.png)
